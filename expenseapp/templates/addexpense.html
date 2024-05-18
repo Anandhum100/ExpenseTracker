@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+{% extends 'home.html' %}
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Expense</title>
+</head>
+<body>
+    {% include 'components/msg.html' %}
+    <form name="expenseForm" class="forms-sample" method="post" action="{% url 'Expensedata' %}" onsubmit="return validateForm()">
+        {% csrf_token %}
+        {{ form.as_p }}
+    <div class="col-md-6">
+        <div class="card mb-4">
+          <h5 class="card-header">Add Expense</h5>
+          <div class="card-body">
+            <div class="form-floating">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="userName"
+                  name="userName"
+                  value="{{user.username}}"
+                  placeholder=""
+                  readonly
+                  aria-describedby="floatingInputHelp"
+                />
+                <label for="floatingInput"> Name</label>
+                
+              </div><br><br>
+            <div class="form-floating">
+              <input
+                type="text"
+                class="form-control"
+                id="expenseName"
+                name="expenseName"
+                placeholder="description"
+                aria-describedby="floatingInputHelp"
+              />
+              <label for="floatingInput">Expense name</label>
+              
+            </div><br><br>
+            <div class="form-floating">
+                <input
+                  type="number"
+                  class="form-control"
+                  id="amountSpent"
+                  name="amountSpent"
+                  placeholder="Amount"
+                  aria-describedby="floatingInputHelp"
+                />
+                <label for="floatingInput">Amount Spent</label>
+             </div><br>
+            <div class="mb-3 row">
+                <label for="html5-date-input" class="col-md-4 col-form-label">Date</label>
+                <div class="col-md-10">
+                  <input class="form-control" type="date" value="currentDate" id="currentDate" name="currentDate" />
+                </div>
+            </div><br>
+            <div class="mb-3">
+                <label for="exampleFormControlSelect1" class="form-label">Category of expense</label>
+                <select class="form-select" id="expenseCategory"   name="expenseCategory"  placeholder="(e.g., Food, Transportation, Entertainment)" aria-label="Default select example">
+                  <option disabled selected>Open this select menu</option>
+                  <option value="Health Care">Health Care=( Health insurance, medical bills, prescriptions, and wellness expenses )</option>
+                  <option value="Entertainment">Entertainment=( Movies, concerts, hobbies, and other leisure activities )</option>
+                  <option value="Insurance">Insurance=( Other insurance policies like life, disability, or travel insurance )</option>
+                  <option value="Food">Food=( Groceries, dining out, and food delivery )</option>
+                  <option value="Education">Education=(  Tuition, school supplies, and educational expenses )</option>
+                  <option value="Transportation">Transportation=(  Fuel, public transportation, car payments, maintenance, and insurance )</option>
+                  <option value="Housing">Housing=( Rent or mortgage payments, property taxes, utilities, maintenance, and insurance )</option>
+                  <option value="Utilities">Utilities=(  Electricity, water, gas, internet, and phone bills )</option>
+                  <option value="Personal">Personal Care=( Toiletries, haircuts, cosmetics, and personal grooming )</option>
+                  <option value="Child Care">Child Care=( Expenses related to childcare or dependent care )</option>
+                  <option value="Taxes">Taxes=( Income taxes, property taxes, and other tax-related expenses )</option>
+                  <option value="Debt Payments">Debt Payments=(  Credit card payments, loan repayments, and any other debts )</option>
+                  <option value="Gifts">Gifts and Donations=(  Gifts for others and charitable donations )</option>
+                  <option value="Travel">Travel=( Costs associated with vacations, trips, or business travel )</option>
+                  <option value="Home and Office">Home and Office=( Office supplies, home improvement, and furnishings )</option>
+                  <option value="Emergency Fund">Emergency Fund=( Contributions to an emergency fund for unexpected expenses )</option>
+                  <option value="Others">Others</option>
+                </select>
+            </div>
+          <button  type="submit" class="btn rounded-pill btn-primary">
+            <span class="tf-icons bx bx-pie-chart-alt"></span>&nbsp; Add Expense
+          </button> <br><br>
+    </form>
+          
+        </div>
+      </div>
+
+      <script>
+
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0'); 
+        const day = String(today.getDate()).padStart(2, '0');
+        
+    
+        const formattedDate = `${year}-${month}-${day}`;
+        
+        document.getElementById("currentDate").value = formattedDate;
+    </script>
+
+<script>
+    function validateAmount() {
+        // Get the input element
+        var amountField = document.getElementById("amountSpent");
+        var amount = amountField.value;
+
+        // Remove any commas from the input, if present
+        amount = amount.replace(/,/g, '');
+
+        // Check if the input is a valid numerical value
+        if (isNaN(parseFloat(amount))) {
+            alert("Please enter a valid numerical value for the amount.");
+            amountField.value = ""; // Clear the input
+            return;
+        }
+
+        // Check for non-negative values
+        if (parseFloat(amount) < 0) {
+            alert("Amount must be non-negative.");
+            amountField.value = ""; // Clear the input
+            return;
+        }
+
+        // Set a reasonable minimum and maximum value (adjust as needed)
+        var minAmount = 0;
+        var maxAmount = 1000000;
+        if (parseFloat(amount) < minAmount || parseFloat(amount) > maxAmount) {
+            alert("Amount must be between " + minAmount + " and " + maxAmount + ".");
+            amountField.value = ""; // Clear the input
+            return;
+        }
+    }
+</script>
+
+
+<script>
+    function validateForm() {
+        var expenseName = document.forms["expenseForm"]["expenseName"].value;
+        var amountSpent = document.forms["expenseForm"]["amountSpent"].value;
+        var currentDate = document.forms["expenseForm"]["currentDate"].value;
+        var expenseCategory = document.forms["expenseForm"]["expenseCategory"].value;
+
+        // Check if expense name is not empty
+        if (expenseName.trim() === "") {
+            alert("Expense name must be filled out");
+            return false;
+        }
+
+        // Check if amount spent is a positive number
+        if (isNaN(amountSpent) || parseFloat(amountSpent) <= 0) {
+            alert("Amount spent must be a positive number");
+            return false;
+        }
+
+        // You can add more date validation here if needed, e.g., format checks
+
+        // Check if the expense category is not empty
+        if (expenseCategory.trim() === "") {
+            alert("Expense category must be filled out");
+            return false;
+        }
+
+        // If all checks pass, the form is considered valid
+        return true;
+    }
+</script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+            {% if messages %}
+                {% for i in messages %}
+                    {% if i.tags == 'warning' %}
+                        <script>
+                           swal('{{i}}','', 'warning');
+                        </script>
+                    {% elif i.tags == 'error' %}
+                        <script>
+                            swal('{{i}}','', 'error');
+                        </script>
+                    {% else %}
+                        <script>
+                            swal('{{i}}','', 'success');
+                        </script>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+
+</body>
+</html>
+{% endblock %}

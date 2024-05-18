@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+{% extends "home.html" %}
+
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+   
+<div class="container mt-4">
+    <h1>Expense History</h1>
+
+    <form method="GET" action="{% url 'expense_history' %}">
+        <div class="mb-3">
+            <label for="category" class="form-label">Filter by Category:</label>
+            <select  name="category" id="category" class="form-select">
+                  <option disabled selected value="">All Categories</option>
+                  <option value="Health Care">Health Care=( Health insurance, medical bills, prescriptions, and wellness expenses )</option>
+                  <option value="Entertainment">Entertainment=( Movies, concerts, hobbies, and other leisure activities )</option>
+                  <option value="Insurance">Insurance=( Other insurance policies like life, disability, or travel insurance )</option>
+                  <option value="Food">Food=( Groceries, dining out, and food delivery )</option>
+                  <option value="Education">Education=(  Tuition, school supplies, and educational expenses )</option>
+                  <option value="Transportation">Transportation=(  Fuel, public transportation, car payments, maintenance, and insurance )</option>
+                  <option value="Housing">Housing=( Rent or mortgage payments, property taxes, utilities, maintenance, and insurance )</option>
+                  <option value="Utilities">Utilities=(  Electricity, water, gas, internet, and phone bills )</option>
+                  <option value="Personal">Personal Care=( Toiletries, haircuts, cosmetics, and personal grooming )</option>
+                  <option value="Child Care">Child Care=( Expenses related to childcare or dependent care )</option>
+                  <option value="Taxes">Taxes=( Income taxes, property taxes, and other tax-related expenses )</option>
+                  <option value="Debt Payments">Debt Payments=(  Credit card payments, loan repayments, and any other debts )</option>
+                  <option value="Gifts">Gifts and Donations=(  Gifts for others and charitable donations )</option>
+                  <option value="Travel">Travel=( Costs associated with vacations, trips, or business travel )</option>
+                  <option value="Home and Office">Home and Office=( Office supplies, home improvement, and furnishings )</option>
+                  <option value="Emergency Fund">Emergency Fund=( Contributions to an emergency fund for unexpected expenses )</option>
+                  <option value="Others">Others</option>
+                <!-- Add options for categories here -->
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="start_date" class="form-label">Start Date:</label>
+            <input type="date" name="start_date" id="start_date" class="form-control">
+        </div>
+
+        <div class="mb-3">
+            <label for="end_date" class="form-label">End Date:</label>
+            <input type="date" name="end_date" id="end_date" class="form-control">
+        </div>
+
+        <div class="mb-3">
+            <label for="search" class="form-label">Search </label>
+            <input type="text" name="search" id="search" class="form-control" placeholder="Search by name or description">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Apply Filters</button>
+    </form>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Expense Name</th>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>Category</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for expense in expense_page %}
+            <tr>
+                <td>{{ expense.ExpenseName }}</td>
+                <td>{{ expense.Amount }}</td>
+                <td>{{ expense.Date }}</td>
+                <td><span class="badge bg-label-info me-1">{{ expense.ExpenseCategory }}</td>
+                <td>
+                    <a href="{% url 'ExpenseEdit' expense.id %}" class="btn btn-primary btn-sm">Edit</a>
+                    <a href="{% url 'DeleteExpense' expense.id %}" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table><br>
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if expense_page.has_previous %}
+                <a href="?page=1"  class="btn btn-outline-success">&laquo;   first</a>
+                <a href="?page={{ expense_page.previous_page_number }}" class="btn btn-outline-info">previous</a>
+            {% endif %}
+
+            <span class="current-page">
+                Page {{ expense_page.number }} of {{ expense_page.paginator.num_pages }}.
+            </span>
+
+            {% if expense_page.has_next %}
+                <a href="?page={{ expense_page.next_page_number }}" class="btn btn-outline-secondary">next</a>
+                <a href="?page={{ expense_page.paginator.num_pages }}" class="btn btn-outline-secondary">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+</div><br><br>
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+{% if messages %}
+    {% for i in messages %}
+        {% if i.tags == 'warning' %}
+            <script>
+               swal('{{i}}','', 'warning');
+            </script>
+        {% elif i.tags == 'error' %}
+            <script>
+                swal('{{i}}','', 'error');
+            </script>
+        {% else %}
+            <script>
+                swal('{{i}}','', 'success');
+            </script>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+
+</body>
+{% endblock %}
+</html>
